@@ -4,28 +4,23 @@ $(document).ready(function () {
         console.log('submitted');
 
         e.preventDefault(); // avoid to execute the actual submit of the form.
-        $.ajax({
-            type: "GET",
-            url: "http://localhost:4000/hello?name=" + $("#input").val(),
-            success: function(data) {
-                console.log(data);
-            }
-        });
-
-        setInterval(getMemory, 1000);
-
-
+        data = getZipcodes($("#input").val());
     });
 
-    function getMemory() {
-        var url = "http://localhost:4000/memory"; // the script where you handle the form input.
+
+    function getZipcodes(cityName) {
+        $('body').removeAttr("select"); 
+        var url = "http://localhost:4000/zips/" + cityName
         $.ajax({
             type: "GET",
             url: url,
-            data: $("#form").serialize(), // serializes the form's elements.
-            success: function(data)
-            {
-                console.log(data); // show response from the php script.
+            success: function(data) {
+                console.log(data);
+                arr = data;
+                var sel = $('<select>').appendTo('body');
+                $(arr).each(function() {
+                 sel.append($("<option>").attr('code',this.Code).text(this.Code + ", " + this.State));
+                });
             }
         });
     }
