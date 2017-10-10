@@ -9,9 +9,9 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/info344-a17/info344-in-class/zipsvr/handlers"
+	"github.com/ssharif6/info344-in-class/zipsvr/handlers"
 
-	"github.com/info344-a17/info344-in-class/zipsvr/models"
+	"github.com/ssharif6/info344-in-class/zipsvr/models"
 )
 
 const zipsPath = "/zips/"
@@ -39,7 +39,7 @@ func main() {
 	//if not set, default to ":443", which means listen for
 	//all requests to all hosts on port 443
 	if len(addr) == 0 {
-		addr = ":443"
+		addr = ":4000"
 	}
 
 	tlskey := os.Getenv("TLSKEY")
