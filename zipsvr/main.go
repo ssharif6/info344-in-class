@@ -39,7 +39,7 @@ func main() {
 	//if not set, default to ":443", which means listen for
 	//all requests to all hosts on port 443
 	if len(addr) == 0 {
-		addr = ":4000"
+		addr = ":443"
 	}
 
 	tlskey := os.Getenv("TLSKEY")
@@ -94,5 +94,6 @@ func main() {
 	mux.Handle(zipsPath, cityHandler)
 
 	fmt.Printf("server is listening at https://%s\n", addr)
+	fmt.Println(tlscert)
 	log.Fatal(http.ListenAndServeTLS(addr, tlscert, tlskey, mux))
 }
