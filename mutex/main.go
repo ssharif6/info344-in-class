@@ -25,4 +25,9 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 	c := NewCache()
 
+	for i := 0; i < 10; i++ {
+		go client(i, c)
+	}
+
+	time.Sleep(time.Minute)
 }
