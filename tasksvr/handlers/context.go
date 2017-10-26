@@ -1,5 +1,7 @@
 package handlers
 
+import "github.com/ssharif6/info344-in-class/tasksvr/models/tasks"
+
 //Context holds context values
 //used by multiple handler functions.
 type Context struct {
@@ -7,4 +9,9 @@ type Context struct {
 	//a tasks.Store implementation.
 	//Our handlers will use this to
 	//insert, update, and get tasks
+	tasksStore tasks.Store
+}
+
+func NewHandlerContext(tasksStore *tasks.MongoStore) *Context{
+	return &Context{tasksStore: tasksStore,}
 }

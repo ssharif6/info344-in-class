@@ -1,0 +1,6 @@
+HOST myhostname
+    Hostname shaheensharifian.me
+    User root
+HOST apihostname
+    Hostname api.shaheensharifian.me
+    User root

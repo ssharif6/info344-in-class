@@ -11,4 +11,5 @@ create table tags (
     taskID varchar(25),
     tag varchar(64) not null,
     foreign key (taskID) references tasks(id)
+
 )
