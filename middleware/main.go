@@ -26,7 +26,7 @@ func main() {
 	mux.HandleFunc("/time", handlers.TimeHandler)
 
 	//TODO: wrap the mux with the Logger middleware and gzip
-	wrappedMux := middleware.NewLogger(mux)
+	wrappedMux := middleware.NewGzipCompressor(middleware.NewLogger(mux))
 
 	log.Printf("server is listening at http://%s", addr)
 	log.Fatal(http.ListenAndServe(addr, wrappedMux))
