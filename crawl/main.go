@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 )
 
@@ -10,12 +11,32 @@ usage:
 	crawl <starting-url>
 `
 
+type JobResult struct {
+	URL   string
+	PL    *PageLinks
+	Error error
+}
+
+func reportResults(result *JobResult, results chan *JobResult) {
+	log.Printf("reporting results for %s", result.URL)
+	results <- result
+}
+
+func startWorking(URLs chan string, results chan *JobResult) {
+	for URL := range URLs {
+		log.Printf("crawling %s", URL)
+		links, err := GetPageLinks(URL)
+		result := &JobResult{URL, links, err}
+		go reportResults(result, results)
+	}
+}
+
 //numWorkers is the number of worker goroutines
 //we will start: begin with just 1 and increase
 //to see the benefits of concurrent execution,
 //but don't increase beyond the number of concurrent
 //socket connections allowed by your OS
-const numWorkers = 1
+const numWorkers = 20
 
 func main() {
 	if len(os.Args) < 2 {
@@ -24,7 +45,40 @@ func main() {
 	}
 
 	//use the first argument as our starting URL
-	//startingURL := os.Args[1]
+	startingURL := os.Args[1]
+	// buffered urls
+	URLs := make(chan string, 1000)
+	results := make(chan *JobResult, 1000)
+	seen := map[string]bool{}
+
+	for i := 0; i < numWorkers; i++ {
+		go startWorking(URLs, results)
+	}
+
+	seen[startingURL] = true
+	URLs <- startingURL
+	count := 1
+
+	for result := range results {
+		count--
+		if result.Error != nil {
+			log.Printf("error crawling %s: %v", result.URL, result.Error)
+			continue
+		}
+		log.Printf("processing %d links found in %s", len(result.PL.Links), result.URL)
+		for _, URL := range result.PL.Links {
+			if !seen[URL] {
+				seen[URL] = true
+				log.Printf("adding %s to the queue", URL)
+				URLs <- URL
+				count++
+			}
+		}
+		if count == 0 {
+			log.Printf("DONE")
+			return
+		}
+	}
 
 	//TODO: build a concurrent web crawler
 	//with `numWorkers` worker goroutines,
