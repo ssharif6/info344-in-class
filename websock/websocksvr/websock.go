@@ -127,15 +127,11 @@ func (n *Notifier) start() {
 	//channels here using a non-blocking `select` statement
 	for event := range n.eventQ {
 		n.mx.Lock()
-		for _, c := range n.clients {
+		for i, c := range n.clients {
 			err := c.WriteMessage(websocket.TextMessage, event)
 			if err != nil {
 				log.Printf(err.Error())
-				for i, x := range n.clients {
-					if x == c {
-						n.clients = append(n.clients, n.clients[i+1:]...)
-					}
-				}
+				n.clients = append(n.clients, n.clients[i+1:]...)
 				break
 			}
 		}
